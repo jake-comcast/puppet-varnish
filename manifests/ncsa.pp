@@ -23,7 +23,7 @@ class varnish::ncsa (
     ensure    => $service_ensure,
     enable    => $enable,
     require   => Service['varnish'],
-    subscribe => File['/etc/default/varnishncsa'],
+    subscribe => File[$ncsa_file_path],
   }
 
 }
