@@ -10,10 +10,12 @@ class varnish::params {
         $conf_file_path = '/etc/varnish/varnish.params'
       } else {
         $conf_file_path = '/etc/sysconfig/varnish'
+        $ncsa_file_path = '/etc/sysconfig/varnishncsa'
       }
     }
     default: {
       $conf_file_path = '/etc/default/varnish'
+      $ncsa_file_path = '/etc/default/varnishncsa'
     }
   }
 

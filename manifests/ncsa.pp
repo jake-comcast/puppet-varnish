@@ -2,8 +2,10 @@ class varnish::ncsa (
   $enable = true,
   $varnishncsa_daemon_opts = undef,
 ) {
+  # read parameters
+  include varnish::params
 
-  file { '/etc/default/varnishncsa':
+  file { "${ncsa_file_path}":
     ensure  => 'present',
     mode    => '0644',
     owner   => 'root',
