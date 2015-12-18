@@ -5,7 +5,7 @@ class varnish::ncsa (
   # read parameters
   include varnish::params
 
-  file { "${ncsa_file_path}":
+  file { "${varnish::params::ncsa_file_path}":
     ensure  => 'present',
     mode    => '0644',
     owner   => 'root',
@@ -23,7 +23,7 @@ class varnish::ncsa (
     ensure    => $service_ensure,
     enable    => $enable,
     require   => Service['varnish'],
-    subscribe => File[$ncsa_file_path],
+    subscribe => File[$varnish::params::ncsa_file_path],
   }
 
 }
