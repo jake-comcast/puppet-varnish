@@ -18,7 +18,8 @@
 # }
 
 class varnish::service (
-  $start = 'yes',
+  $start  = 'yes',
+  $enable = 'true',
 ) {
 
   # include install
@@ -39,6 +40,7 @@ class varnish::service (
 
   service {'varnish':
     ensure  => $service_state,
+    enable  => $enable,
     restart => $reload_cmd,
     require => Package['varnish'],
   }
