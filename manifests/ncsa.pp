@@ -1,6 +1,7 @@
 class varnish::ncsa (
   $enable = true,
   $varnishncsa_daemon_opts = undef,
+  $varnishncsa_daemon_opts_override = false,
 ) {
   # read parameters
   include varnish::params

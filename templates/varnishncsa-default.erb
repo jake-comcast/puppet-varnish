@@ -12,5 +12,9 @@ VARNISHNCSA_ENABLED=1
 <% end -%>
 
 <% if @varnishncsa_daemon_opts -%>
+<% if @varnishncsa_daemon_opts_override -%>
+DAEMON_OPTS="<%= @varnishncsa_daemon_opts %>"
+<% else -%>
 DAEMON_OPTS="${DAEMON_OPTS} <%= @varnishncsa_daemon_opts %>"
+<% end -%>
 <% end -%>
