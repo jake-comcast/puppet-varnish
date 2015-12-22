@@ -59,6 +59,7 @@ class varnish (
   $varnish_min_threads          = '5',
   $varnish_max_threads          = '500',
   $varnish_thread_timeout       = '300',
+  $varnish_thread_add_delay     = '20',
   $varnish_storage_size         = '1G',
   $varnish_secret_file          = '/etc/varnish/secret',
   $varnish_storage_file         = '/var/lib/varnish-storage/varnish_storage.bin',
