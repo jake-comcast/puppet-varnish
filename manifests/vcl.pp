@@ -54,6 +54,7 @@ class varnish::vcl (
   $https_redirect    = false,
   $drop_stat_cookies = true,
   $cond_unset_cookies = undef,
+  $manage_vcl_conf   = true,
 ) {
 
   include varnish
@@ -88,16 +89,18 @@ class varnish::vcl (
     }
   }
 
-  # vcl file
-  file { 'varnish-vcl':
-    ensure  => present,
-    path    => $varnish::varnish_vcl_conf,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template($template_vcl),
-    notify  => Service['varnish'],
-    require => Package['varnish'],
+  if $manage_vcl_conf {
+    # vcl file
+    file { 'varnish-vcl':
+      ensure  => present,
+      path    => $varnish::varnish_vcl_conf,
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => template($template_vcl),
+      notify  => Service['varnish'],
+      require => Package['varnish'],
+    }
   }
 
   if $template == undef or $manage_includes {
