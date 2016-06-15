@@ -87,25 +87,33 @@ VARNISH_TTL=<%= scope.lookupvar('varnish_ttl') %>
 # # DAEMON_OPTS is used by the init script.  If you add or remove options, make
 # # sure you update this section, too.
 # Version: <%= scope.lookupvar('varnish::params::version') %>
-DAEMON_OPTS="-a <%= scope.lookupvar('varnish_listen_address') %>:<%= scope.lookupvar('varnish_listen_port') %> \
-             -f <%= scope.lookupvar('varnish_vcl_conf') %> \
-             -T <%= scope.lookupvar('varnish_admin_listen_address') %>:<%= scope.lookupvar('varnish_admin_listen_port') %> \
-             -t <%= scope.lookupvar('varnish_ttl') %> \
-             -S <%= scope.lookupvar('varnish_secret_file') %> \
+<% daemon_opts = ["-a %s:%s" % [scope.lookupvar('varnish_listen_address'), scope.lookupvar('varnish_listen_port')],
+                   "-f %s" % [scope.lookupvar('varnish_vcl_conf')],
+                   "-T %s:%s" % [scope.lookupvar('varnish_admin_listen_address'), scope.lookupvar('varnish_admin_listen_port')],
+                   "-t %s" % [scope.lookupvar('varnish_ttl')],
+                   "-S %s" % [scope.lookupvar('varnish_secret_file')]
+                 ] -%>
 <% if scope.lookupvar('storage_type') == 'malloc' -%>
-             -s <%= scope.lookupvar('storage_type') %>,<%= scope.lookupvar('varnish_storage_size') %> \
+  <%- daemon_opts << "-s %s,%s" % [scope.lookupvar('storage_type'), scope.lookupvar('varnish_storage_size')] -%>
 <% else -%>
-             -s <%= scope.lookupvar('storage_type') %>,<%= scope.lookupvar('varnish_storage_file') %>,<%= scope.lookupvar('varnish_storage_size') %> \
+  <%- daemon_opts << "-s %s,%s,%s" % [scope.lookupvar('storage_type'), scope.lookupvar('varnish_storage_file'), scope.lookupvar('varnish_storage_size')] -%>
 <% end -%>
 <% if scope.lookupvar('varnish::params::version').to_i == 4 -%>
-             -u <%= scope.lookupvar('varnish_user') %> \
-             -g <%= scope.lookupvar('varnish_group') %> \
-             -p thread_pool_min=<%= scope.lookupvar('varnish_min_threads') %> \
-             -p thread_pool_max=<%= scope.lookupvar('varnish_max_threads') %> \
-             -p thread_pool_add_delay=<%= scope.lookupvar('varnish_thread_add_delay') %> \
-             -p thread_pool_timeout=<%= scope.lookupvar('varnish_thread_timeout') %>"
+  <%- if @version[0..2].to_f >= 4.1 -%>
+    <%- unless @varnish_jail.nil? -%>
+      <%- jail_user   = ",user='%s'" % [@varnish_jail_user] if @varnish_jail_user-%>
+      <%- jail_ccgroup = ",ccgroup='%s'" % [@varnish_jail_ccgroup] if @varnish_jail_ccgroup -%>
+      <%- daemon_opts.unshift("-j %s%s%s" % [@varnish_jail, jail_user, jail_ccgroup]) -%>
+    <%- end -%>
+  <%- else -%>
+    <%- daemon_opts << "-u %s" % [scope.lookupvar('varnish_user')] -%>
+    <%- daemon_opts << "-g %s" % [scope.lookupvar('varnish_group')] -%>
+  <%- end -%>
+  <%- daemon_opts << "-p thread_pool_min=%s" % [scope.lookupvar('varnish_min_threads')] -%>
+  <%- daemon_opts << "-p thread_pool_max=%s" % [scope.lookupvar('varnish_max_threads')] -%>
+  <%- daemon_opts << "-p thread_pool_add_delay=%s" % [scope.lookupvar('varnish_thread_add_delay')] -%>
+  <%- daemon_opts << "-p thread_pool_timeout=%s" % [scope.lookupvar('varnish_thread_timeout')] -%>
 <% else -%>
-             -w <%= scope.lookupvar('varnish_min_threads') %>,<%= scope.lookupvar('varnish_max_threads') %>,<%= scope.lookupvar('varnish_thread_timeout') %>"
+  <%- daemon_opts << "-w %s,%s,%s" % [scope.lookupvar('varnish_min_threads'), scope.lookupvar('varnish_max_threads'), scope.lookupvar('varnish_thread_timeout')] -%>
 <% end -%>
-
-
+DAEMON_OPTS="<%= daemon_opts.join(" \\\n             ") %>"
