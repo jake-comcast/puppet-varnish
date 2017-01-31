@@ -8,6 +8,7 @@ class varnish::params {
     'RedHat': {
       if versioncmp($::operatingsystemmajrelease, '7') >= 0 {
         $conf_file_path = '/etc/varnish/varnish.params'
+        $ncsa_file_path = '/etc/varnish/varnishncsa.params'
       } else {
         $conf_file_path = '/etc/sysconfig/varnish'
         $ncsa_file_path = '/etc/sysconfig/varnishncsa'
